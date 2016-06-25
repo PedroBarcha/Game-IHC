@@ -1,26 +1,269 @@
-<!DOCTYPE html>
-<html>
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>SALVE SALVE SALVE</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
 
-	<head>
-		<meta charset="utf-8" />
-		<title>Learn Game Development at ZENVA.com</title>
+<script type="text/javascript">
+var game = new Phaser.Game(1400, 800, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var ball;
+var health = 25;
+var timer;
+var push;
+var count = 0;
+var stateText;
+var space;
+var play = 0;
+var back0;
+var back1;
+var back2;
+var back3;
+var back4;
+var impulse = false;
+var sens = 0;
+var state = 0;
+var fleche;
+var massage = 1;
+var eye;
+var eyedead;
+function preload() {
+    game.load.script('player.js', 'js/HealthBar.js');
+    game.load.image('ball', 'assets/ball.png');
+    game.load.image('cardio0', 'assets/cardio0.png');
+    game.load.image('cardio1', 'assets/cardio1.png');
+    game.load.image('cardio2', 'assets/cardio2.png');
+    game.load.image('cardio3', 'assets/cardio3.png');
+    game.load.image('cardio4', 'assets/cardio4.png');
+    game.load.image('eye', 'assets/eye.png');
+    game.load.image('eyedead', 'assets/eyedead.png');
+    game.load.image('bar', 'assets/vu.png');
+    game.load.image('fleche', 'assets/fleche.png');
+    game.load.image('heart', 'assets/heart.png');
+    game.stage.backgroundColor = '#000';
+    timer = game.time.create(false);
+    timer.loop(1000, updateCounter, this);
+    timer.start();
+}
 
-		<script type="text/javascript" src="js/phaser.js"></script>
-		<script type="text/javascript" src="js/Boot.js"></script>
-		<script type="text/javascript" src="js/Preload.js"></script>
-		<script type="text/javascript" src="js/MainMenu.js"></script>
-		<script type="text/javascript" src="js/Game.js"></script>
+function updateCounter(){
+    if(play == 1){
+        count+=1;
+        health -= 10;
+    }
+}
+function create() {
+    back1 = game.add.image(0,0,"cardio1");
+    back1.scale.set(800/back1.height);
+    back1.width = 1400;
+    back1.visible = false;
+    back2 = game.add.image(0,0,"cardio2");
+    back2.scale.set(800/back2.height);
+    back2.width = 1400;
+    back2.visible = false;
+    back3 = game.add.image(0,0,"cardio3");
+    back3.scale.set(800/back3.height);
+    back3.width = 1400;    
+    back3.visible = false;
+    back4 = game.add.image(0,0,"cardio4");
+    back4.scale.set(800/back4.height);
+    back4.width = 1400;
+    back4.visible = false;
+    back0 = game.add.image(0,0,"cardio0");
+    back0.scale.set(800/back0.height);
+    back0.width = 1400;
+    push = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
+    var bar = game.add.sprite(game.width/2+150, game.height * 3/4, "bar");
+    eye = game.add.sprite(60, 590, "eye");
+    eye.width = 50;
+    eye.height = 50;
+    eye.visible = false;
+    eyedead = game.add.sprite(60, 590, "eyedead");
+    eyedead.width = 50;
+    eyedead.height = 50;
+    eyedead.visible = false;
+    bar.width =150;
+    bar.height =40;
+    bar.scale.x *= -1;
+    this.myHealthBar = new HealthBar(this.game, {x: 1200, y: 75, bg: {color: '#FF0000'},bar: {color: '#00FF00'}});
+    var bar2 = game.add.sprite(game.width/2-150, game.height * 3/4, "bar");
+    bar2.width = 150;
+    bar2.height = 40;
+    this.myHealthBar = new HealthBar(this.game, {x: 1200, y: 75});
+    var heart = game.add.sprite(game.width/2,game.height*3/4-15,"heart");
+    heart.anchor.set(0.5,0);
+    heart.width = heart.width/64;
+    heart.height = heart.height/64;
+    fleche = game.add.sprite(150,200,"fleche");
+    var heart2 = game.add.sprite(game.width/2,game.height*3/4+25,"heart");
+    heart2.anchor.set(0.5,1);
+    heart2.width = heart2.width/64;
+    heart2.height = heart2.height/64;
+    heart2.scale.y *= -1;
+    ball = game.add.sprite(0,0, "ball");
+    ball.width = 20;
+    ball.height = 20;
+    ball.anchor.set(0.5);
+    ball.y = game.height*3/4 + 20;
+    placeBall(game.width/2);
+    stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#000' });
+    stateText.anchor.setTo(0.5, 0.5);
+    stateText.visible = true;
+    space = game.add.text(game.width/2,game.height*3/4+100,'PRESS SPACE MANÉ', { font: '84px Arial', fill: '#000' });
+    space.anchor.set(0.5);
+    stateText.text="SALVE \n Click to START";
+    game.input.onTap.addOnce(start,this);
+}
+function setImage(imaA,imaN){
+    imaA.visible = false;
+    imaN.visible = true;
+}
 
-		<style>
-		  body {
-		    padding: 0px;
-		    margin: 0px;
-		  }
-		  </style>
-	</head>
+function moveArms(){
+    if(impulse){
+        if (state == 0){
+            state +=1;
+            sens = 0; 
+            if(massage){
+                setImage(back0,back1);
+            }else{
+                fleche.y +=20;
+            }
+        }else if(state == 1){
+            if(sens == 0 ){
+                state+=1
+                if(massage){
+                    setImage(back1,back2);
+                }else{
+                    fleche.y +=20;  
+                }
+            }else{
+                state-=1;
+                if(massage){
+                    setImage(back1,back0);
+                }else{
+                    fleche.y -=20;
+                }
+                impulse = false;
+                sens = 0;
+            }
+        }else if(state == 2){
+            if(sens == 0 ){
+                if(massage){
+                    setImage(back2,back3);
+                }else{
+                    fleche.y +=20;
+                }
+                state+=1
+            }else{
+                if(massage){
+                    setImage(back2,back1);
+                }else{
+                    fleche.y -=20;
+                }
+                state-=1;
+            }
+        }else if(state == 3){
+            if(sens == 0 ){
+                state+=1
+                if(massage){
+                    setImage(back3,back4);
+                }else{
+                    fleche.y +=20;
+                }
+            }else{
+                if(massage){
+                    setImage(back3,back2);
+                }else{
+                    fleche.y -=20;
+                }
+                state-=1;
+            }
+        }else if(state == 4){
+            if(massage){
+                setImage(back4,back3);
+            }else{
+                fleche.y -=20;
+            }
+            state -=1;
+            sens = 1;
+        }
+    }
+  
+}
+function start(){
+    stateText.visible = false;
+    play = 1;
+}
+function getDistanceFromMiddle(){
+    var ret = 0;
+    if(Math.abs(ball.x-game.width/2)<8){
+        ret = 1;
+    }
+    return ret;
+}
+function placeBall(x){
+    var sens = count%2;
+    ball.x = getOrdBall(x,sens);
+}
+function getOrdBall(val,sens){
+    var base = game.width/2 - 150;
+    if(sens == 0)
+        return (3/10)*val+base;
+    else
+        return (-3/10)*val+base+300;
 
-	<body>  
-		<!-- include the main game file -->
-		<script src="js/main.js"></script>
-	</body>
+}
+function restart(){
+    health = 25;
+    placeBall(game.width/2);
+    stateText.visible = false;
+    play = 1;
+    eye.visible = false;
+    eyedead.visible = false;
+}
+function update() {
+    if(play){
+        if(Math.abs(ball.x-game.width/2)<8){
+            space.visible = true;
+        }else{
+            space.visible = false;
+        }
+        if (health>100){
+            eye.visible = true;
+            play = 0;
+            stateText.text=" YOU SAVED THE GUY \n Click to restart";
+            stateText.visible = true;
+            game.input.onTap.addOnce(restart,this);
+        }else if(health<0){
+            play = 0;
+            eyedead.visible = true;
+            stateText.text=" FODEU \n Click to restart";
+            stateText.visible = true;
+        }
+        game.input.onTap.addOnce(restart,this);
+        placeBall(timer.duration.toFixed(0));
+        this.myHealthBar.setPercent(health);
+        if (push.isDown){
+            impulse = true;
+            if(getDistanceFromMiddle()){
+                health += 7;
+            }
+        }
+        moveArms();
+    }
+}
+
+</script>
+
+</body>
 </html>
