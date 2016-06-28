@@ -6,7 +6,7 @@ GameTranquiloFavoravel.MainMenu.prototype = {
   create: function() {
   	/* Mostra o fundo repetido */
     this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'space');
-    
+
     /* Da movimento horizontal à imagem */
     this.background.autoScroll(-20, 0);
 
