@@ -64,10 +64,81 @@ function updateCounter(){
         health -= 3;
     }
 }
-
+function setImage(imaA,imaN){
+    imaA.visible = false;
+    imaN.visible = true;
+}
 /* DEBUG - melhorar essa função. Timers não estão funcionando */
 function moveArms() {
-
+    if(impulse){
+        if (state == 0){
+            state +=1;
+            sens = 0; 
+            if(massage){
+                setImage(back0,back1);
+            }else{
+                fleche.y +=20;
+            }
+        }else if(state == 1){
+            if(sens == 0 ){
+                state+=1
+                if(massage){
+                    setImage(back1,back2);
+                }else{
+                    fleche.y +=20;  
+                }
+            }else{
+                state-=1;
+                if(massage){
+                    setImage(back1,back0);
+                }else{
+                    fleche.y -=20;
+                }
+                impulse = false;
+                sens = 0;
+            }
+        }else if(state == 2){
+            if(sens == 0 ){
+                if(massage){
+                    setImage(back2,back3);
+                }else{
+                    fleche.y +=20;
+                }
+                state+=1
+            }else{
+                if(massage){
+                    setImage(back2,back1);
+                }else{
+                    fleche.y -=20;
+                }
+                state-=1;
+            }
+        }else if(state == 3){
+            if(sens == 0 ){
+                state+=1
+                if(massage){
+                    setImage(back3,back4);
+                }else{
+                    fleche.y +=20;
+                }
+            }else{
+                if(massage){
+                    setImage(back3,back2);
+                }else{
+                    fleche.y -=20;
+                }
+                state-=1;
+            }
+        }else if(state == 4){
+            if(massage){
+                setImage(back4,back3);
+            }else{
+                fleche.y -=20;
+            }
+            state -=1;
+            sens = 1;
+        }
+    }
 }
 
 GameTranquiloFavoravel.Game.prototype = {
@@ -150,7 +221,7 @@ GameTranquiloFavoravel.Game.prototype = {
     
     /* DEBUG - essa flecha é necessária ?? por que ? */
     /* Flecha */
-    //fleche = this.add.sprite(150,200,"fleche");
+    fleche = this.add.sprite(150,200,"fleche");
       
     /* Bolinha */
     ball = this.add.sprite(700,400, "ball");
@@ -204,6 +275,7 @@ GameTranquiloFavoravel.Game.prototype = {
 
                 /* Verifica se clicou na hora certa. */ 
                 if (this.game.input.activePointer.justPressed()){
+                    impulse = true;
                     /* Acertou! Clicou no verdinho */
                     dist  = getDistanceFromMiddle();
                     if(dist<5){
@@ -222,15 +294,17 @@ GameTranquiloFavoravel.Game.prototype = {
                     else{
                         health -= 20;
                     }
+                    
                 }
-
+                moveArms();
                 /* Ajusta a barra de vida */
                 this.myHealthBar.setPercent(health);
 
                 /* Verifica se o player clicou. Se clicou, move os braços */
-                if(this.game.input.activePointer.justPressed()) {
-                    moveArms();
-                }
+                // if(this.game.input.activePointer.justPressed()) {
+                   
+                // }
+                
             }   
         }            
   },
