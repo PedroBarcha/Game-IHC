@@ -14,6 +14,7 @@ var back1;
 var back2;
 var back3;
 var back4;
+var table;
 var impulse;
 var sens;
 var state;
@@ -71,71 +72,36 @@ function setImage(imaA,imaN){
     imaN.visible = true;
 }
 
-/* Move os braços do carinha */
 function moveArms() {
     if(impulse){
-        if (state == 0){
-            state +=1;
-            sens = 0;
+        if(state<4){
+            if(sens==0){
+                if(massage){
+                     setImage(table[state][0],table[state][1]);
+                }else{
+                    fleche.y +=20;
+                }
+                state+=1;
+            }else{
+                if(massage){
+                    setImage(table[state][1],table[state][0]);
+                }else{
+                    fleche.y -=20;
+                }
+                if(state == 1){
+                    impulse = false;
+                    sens = 0;
+                    fleche.y = 200;
+                }
+                state -=1;
+            }
+        }
+        else{
+            state-=1;
             if(massage){
-                setImage(back0,back1);
-            }else{
-                fleche.y +=20;
+                setImage(table[state][1],table[state][0]);
             }
-        }else if(state == 1){
-            if(sens == 0 ){
-                state+=1
-                if(massage){
-                    setImage(back1,back2);
-                }else{
-                    fleche.y +=20;
-                }
-            }else{
-                state-=1;
-                if(massage){
-                    setImage(back1,back0);
-                }else{
-                    fleche.y -=20;
-                }
-                impulse = false;
-                sens = 0;
-            }
-        }else if(state == 2){
-            if(sens == 0 ){
-                if(massage){
-                    setImage(back2,back3);
-                }else{
-                    fleche.y +=20;
-                }
-                state+=1
-            }else{
-                if(massage){
-                    setImage(back2,back1);
-                }else{
-                    fleche.y -=20;
-                }
-                state-=1;
-            }
-        }else if(state == 3){
-            if(sens == 0 ){
-                state+=1
-                if(massage){
-                    setImage(back3,back4);
-                }else{
-                    fleche.y +=20;
-                }
-            }else{
-                if(massage){
-                    setImage(back3,back2);
-                }else{
-                    fleche.y -=20;
-                }
-                state-=1;
-            }
-        }else if(state == 4){
-            if(massage){
-                setImage(back4,back3);
-            }else{
+            else{
                 fleche.y -=20;
             }
             state -=1;
@@ -195,6 +161,8 @@ GameTranquiloFavoravel.Game.prototype = {
     back4.scale.set(800/back4.height);
     back4.width = 1400;
     back4.visible = false;
+
+    table = [[back0,back1],[back1,back2],[back2,back3],[back3,back4]];
 
     /* Barra  1 */
     var bar = this.add.sprite(1400/2+150, 800 * 3/4, "bar");
