@@ -27,6 +27,11 @@ var activeBackground;
 
 GameTranquiloFavoravel.Game = function(){};
 
+/* Retorna a distancia entre a bola e o centro da barra : 0 < dist < 100*/
+function getDistanceFromMiddle(){
+    return Math.abs(ball.x-back0.width/2)/1.5;
+}
+
 /* Ajusta a posição da bolinha */
 function placeBall(x){
     var sens = count%2;
@@ -61,9 +66,82 @@ function updateCounter(){
     }
 }
 
-/* DEBUG - melhorar essa função. Timers não estão funcionando */
-function moveArms() {
+function setImage(imaA,imaN){
+    imaA.visible = false;
+    imaN.visible = true;
+}
 
+/* Move os braços do carinha */
+function moveArms() {
+    if(impulse){
+        if (state == 0){
+            state +=1;
+            sens = 0;
+            if(massage){
+                setImage(back0,back1);
+            }else{
+                fleche.y +=20;
+            }
+        }else if(state == 1){
+            if(sens == 0 ){
+                state+=1
+                if(massage){
+                    setImage(back1,back2);
+                }else{
+                    fleche.y +=20;
+                }
+            }else{
+                state-=1;
+                if(massage){
+                    setImage(back1,back0);
+                }else{
+                    fleche.y -=20;
+                }
+                impulse = false;
+                sens = 0;
+            }
+        }else if(state == 2){
+            if(sens == 0 ){
+                if(massage){
+                    setImage(back2,back3);
+                }else{
+                    fleche.y +=20;
+                }
+                state+=1
+            }else{
+                if(massage){
+                    setImage(back2,back1);
+                }else{
+                    fleche.y -=20;
+                }
+                state-=1;
+            }
+        }else if(state == 3){
+            if(sens == 0 ){
+                state+=1
+                if(massage){
+                    setImage(back3,back4);
+                }else{
+                    fleche.y +=20;
+                }
+            }else{
+                if(massage){
+                    setImage(back3,back2);
+                }else{
+                    fleche.y -=20;
+                }
+                state-=1;
+            }
+        }else if(state == 4){
+            if(massage){
+                setImage(back4,back3);
+            }else{
+                fleche.y -=20;
+            }
+            state -=1;
+            sens = 1;
+        }
+    }
 }
 
 GameTranquiloFavoravel.Game.prototype = {
@@ -90,6 +168,9 @@ GameTranquiloFavoravel.Game.prototype = {
     /* Listener da barra de espaço do teclado */
     this.spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.escKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
 
     /* Background 0 */
     back0.scale.set(800/back0.height);
@@ -154,9 +235,8 @@ GameTranquiloFavoravel.Game.prototype = {
     heart2.height = heart2.height/64;
     heart2.scale.y *= -1;
 
-    /* DEBUG - essa flecha é necessária ?? por que ? */
     /* Flecha */
-    //fleche = this.add.sprite(150,200,"fleche");
+    fleche = this.add.sprite(150,200,"fleche");
 
     /* Bolinha */
     ball = this.add.sprite(700,400, "ball");
@@ -217,23 +297,30 @@ GameTranquiloFavoravel.Game.prototype = {
 
                 /* Verifica se clicou na hora certa. */
                 if (this.spaceKey.isDown){
-                    /* Acertou! Clicou no verdinho */
-                    if(ball.x < 1400/2 + 30 && ball.x > 1400/2 -30){
-                        health += 7;
-                    }
-                    /* Clicou fora do verde... Errou! */
-                    else {
-                        health -= 7;
-                    }
-                }
+                  impulse = true;
+                  /* Acertou! Clicou no verdinho */
+                  dist  = getDistanceFromMiddle();
+                  if(dist<5){
+                      health += 20;
+                  }
+                  /* Clicou fora do verde... Errou! */
+                  else if(dist<10){
+                      health += 10;
+                  }
+                  else if(dist<25){
+                      health += 5;
+                  }
+                  else if(dist>75){
+                      health -= 40;
+                  }
+                  else{
+                      health -= 20;
+                  }
 
+                }
+                moveArms();
                 /* Ajusta a barra de vida */
                 this.myHealthBar.setPercent(health);
-
-                /* Verifica se o player clicou. Se clicou, move os braços */
-                if(this.spaceKey.isDown) {
-                    moveArms();
-                }
             }
         }
   },
