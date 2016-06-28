@@ -26,6 +26,10 @@ var game;
 var activeBackground;
 
 GameTranquiloFavoravel.Game = function(){};
+/* Retorna a distancia entre a bola e o centro da barra : 0 < dist < 100*/
+function getDistanceFromMiddle(){
+    return Math.abs(ball.x-back0.width/2)/1.5;
+}
 
 /* Ajusta a posição da bolinha */
 function placeBall(x){
@@ -77,6 +81,10 @@ GameTranquiloFavoravel.Game.prototype = {
     },
     
   create: function() {      
+
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
+
     /* Background 0 */
     back0.scale.set(800/back0.height);
     back0.width = 1400;
@@ -168,6 +176,7 @@ GameTranquiloFavoravel.Game.prototype = {
     loopTimer.start();
   },
   update: function() {
+    
         
         /* O cronômetro ainda está rodando, mostrar o tempo na tela */
         if(timerInicio.running) {
@@ -196,12 +205,22 @@ GameTranquiloFavoravel.Game.prototype = {
                 /* Verifica se clicou na hora certa. */ 
                 if (this.game.input.activePointer.justPressed()){
                     /* Acertou! Clicou no verdinho */
-                    if(ball.x < 1400/2 + 30 && ball.x > 1400/2 -30){
-                        health += 7;
+                    dist  = getDistanceFromMiddle();
+                    if(dist<5){
+                        health += 20;
                     }
                     /* Clicou fora do verde... Errou! */
-                    else {
-                        health -= 7;
+                    else if(dist<10){
+                        health += 10;
+                    }
+                    else if(dist<25){
+                        health += 5;
+                    }
+                    else if(dist>75){
+                        health -= 40;
+                    }
+                    else{
+                        health -= 20;
                     }
                 }
 
