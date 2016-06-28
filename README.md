@@ -1,6 +1,6 @@
 TASKS:
 
-- fazer o menu
+FEITO fazer o menu (!!associar o state de help/tuotial, depois de pronto, ao botão respectivo)
 
 FEITO - animação na hora de mover os braços
 
